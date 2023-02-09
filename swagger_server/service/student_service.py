@@ -1,13 +1,15 @@
 import os
 import tempfile
 from functools import reduce
-
+from pymongo import MongoClient, errors
 from tinydb import TinyDB, Query
 
 db_dir_path = tempfile.gettempdir()
 db_file_path = os.path.join(db_dir_path, "students.json")
 student_db = TinyDB(db_file_path)
 
+
+# see https://kb.objectrocket.com/mongo-db/use-docker-and-python-for-a-mongodb-application-1046
 
 def add(student=None):
     queries = []
