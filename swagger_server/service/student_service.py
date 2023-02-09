@@ -1,7 +1,6 @@
 import os
 import tempfile
 from functools import reduce
-from pymongo import MongoClient, errors
 from tinydb import TinyDB, Query
 
 db_dir_path = tempfile.gettempdir()
