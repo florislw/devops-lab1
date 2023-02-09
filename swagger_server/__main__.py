@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import connexion
-from pymongo import MongoClient, errors
 
 from swagger_server import encoder
 
