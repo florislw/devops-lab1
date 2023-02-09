@@ -1,7 +1,7 @@
 name: Builb Test and push
 on: [push]
 env:
-  IMAGE_NAME: devops-lab1/student_service
+  IMAGE_NAME: student_service
   REPO_NAME: florislw
 
 
