@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build and start docker
       run: |
-        docker compose up --build -d -e 8080:8080 -host=172.17.0.2 $REPO_NAME/$IMAGE_NAME:latest && \
+        docker compose up --build && \
         docker ps && sleep 5
     - name: Run API Tests
       id: run-newman
