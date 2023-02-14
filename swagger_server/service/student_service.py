@@ -1,41 +1,47 @@
-import os
-import tempfile
-from functools import reduce
+from pymongo import MongoClient
 
-from tinydb import TinyDB, Query
+# Get the container IP using docker inspect
+CONNECTION_STRING = "mongodb://host.docker.internal:27017"
 
-db_dir_path = tempfile.gettempdir()
-db_file_path = os.path.join(db_dir_path, "students.json")
-student_db = TinyDB(db_file_path)
-
+student_db = MongoClient(CONNECTION_STRING).student_db
+student_collection = student_db.students
 
 def add(student=None):
-    queries = []
-    query = Query()
-    queries.append(query.first_name == student.first_name)
-    queries.append(query.last_name == student.last_name)
-    query = reduce(lambda a, b: a & b, queries)
-    res = student_db.search(query)
+    # todo: make student_id a primary key
+    # We do not check for a duplicate names and last name combination,
+    # instead we now check for duplicate student_ids
+    res = student_collection.find_one({
+        'student_id': student.student_id,
+    })
     if res:
         return 'already exists', 409
 
-    doc_id = student_db.insert(student.to_dict())
-    student.student_id = doc_id
-    return student.student_id
-
+    doc = student_collection.insert_one(student.to_dict())
+    doc_id = doc.inserted_id
+    return str(doc_id)
 
 def get_by_id(student_id=None, subject=None):
-    student = student_db.get(doc_id=int(student_id))
+    # We rewrite this function to look for the student_id, instead of the
+    # primary key. Whether this is actually better depends on the use cases
+    # of the API, however for the purpose of this exercise it makes more
+    # sense to me.
+
+    student = student_collection.find_one({
+        'student_id': student_id
+    })
+
     if not student:
         return 'not found', 404
-    student['student_id'] = student_id
-    print(student)
+
+    student.pop('_id')
     return student
 
-
 def delete(student_id=None):
-    student = student_db.get(doc_id=int(student_id))
-    if not student:
+    res = student_collection.delete_one({
+        'student_id': student_id
+    })
+
+    if not res.deleted_count:
         return 'not found', 404
-    student_db.remove(doc_ids=[int(student_id)])
+
     return student_id
