@@ -2,6 +2,7 @@ version: '3'
 services:
   student_service:
     build: . # use local Dockerfile (as opposed to florislw/student_service)
+    image: florislw/student_service
     restart: unless-stopped
     depends_on:
       - mongo
